@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        boolean wariant = false;
+        boolean wariant = true;
 
         Matrix inputData;  Matrix outputData; int numberOfTests; int numberOfInputs;
         if(wariant){
@@ -35,12 +35,12 @@ public class Main {
 
         NeuralNetwork network;
         //Options
-        network = new NeuralNetwork(1,2,1);
+        network = new NeuralNetwork(1,8,1);
         network.setUseBias(true);
         network.setLineal(false);
-        network.setLearningRate(0.1);
-        network.setMomentum(0.5);
-        int generations = 1000;
+        network.setLearningRate(0.5);
+        network.setMomentum(0.1);
+        int generations = 100000;
 
         ArrayList<Integer> numbers = new ArrayList<Integer>();
         for(int i = 0; i < numberOfTests; i++ ){
@@ -56,8 +56,8 @@ public class Main {
                 network.Backforward(outputData.getRow(index), inputData.getRow(index));
 
             }
-            pisarz.write(Double.toString(MSECalc.calculate(outputData, inputData, network, numberOfTests)) + "\n");
-            System.out.println(MSECalc.calculate(outputData, inputData, network, numberOfTests));
+            //pisarz.write(Double.toString(MSECalc.calculate(outputData, inputData, network, numberOfTests)) + "\n");
+            //System.out.println(MSECalc.calculate(outputData, inputData, network, numberOfTests));
         }
 
         Matrix testInData = new Matrix (1000, 1);

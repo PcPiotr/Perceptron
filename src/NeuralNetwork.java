@@ -58,22 +58,22 @@ public class NeuralNetwork {
     Matrix Feedforward(Matrix input) {
         Matrix hidden = weightsHI.retMultiply(input);
         if (useBias) { hidden.add(biasH); }
-        if (!lineal) { hidden.map(new ActivationFunction()); }
+        hidden.map(new ActivationFunction());
 
         Matrix output = weightsOH.retMultiply(hidden);
         if (useBias) { output.add(biasO); }
-        if (!lineal) { output.map(new ActivationFunction()); }
+        output.map(new LinearFunction());
         return output;
     }
 
     void Backforward(Matrix input, Matrix answer){
         Matrix hidden = weightsHI.retMultiply(input);
         if (useBias) { hidden.add(biasH); }
-        if (!lineal) { hidden.map(new ActivationFunction()); }
+        hidden.map(new ActivationFunction());
 
         Matrix output = weightsOH.retMultiply(hidden);
         if (useBias) { output.add(biasO); }
-        if (!lineal) { output.map(new ActivationFunction()); }
+        output.map(new LinearFunction());
 
         //Output Error
         Matrix outputError = answer.retSubtract(output);
@@ -83,13 +83,8 @@ public class NeuralNetwork {
 
         //Gradient
         Matrix gradient;
-        if (!lineal){
-            gradient = output.retMap(new DerivativeFunction());
-            gradient = ( gradient.retMultiply(outputError) ).retMultiply(learningRate);
-        }
-        else{
-            gradient = outputError.retMultiply(learningRate);
-        }
+        gradient = output.retMap(new DerivativeLinealFunction());
+        gradient = ( gradient.retMultiply(outputError) ).retMultiply(learningRate);
 
         //Delta Weights Output Hidden
         //
@@ -106,13 +101,10 @@ public class NeuralNetwork {
 
         //Hidden Gradient
         Matrix gradientHidden = hidden;
-        if(!lineal){
-            gradientHidden.map(new DerivativeFunction());
-            gradientHidden = ( gradientHidden.retMultiply(hiddenError) ).retMultiply(learningRate);
-        }
-        else{
-            gradient = hiddenError.retMultiply(learningRate);
-        }
+        gradientHidden.map(new DerivativeFunction());
+        gradientHidden = ( gradientHidden.retMultiply(hiddenError) ).retMultiply(learningRate);
+
+
 
         //Inputs->hidden deltas
         deltaWeightsHI = ( gradientHidden.retMultiply(input.retTranspose()) ).retAdd( deltaWeightsHI.retMultiply(momentum) );

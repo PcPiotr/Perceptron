@@ -16,11 +16,9 @@ final public class MSECalc {
             vectorMSE.add(error);
         }
 
-        double totalMSE = 0.0;
-        for(int i = 0; i < testCount; i++){
-            totalMSE += vectorMSE.getValues().get(i).get(0);
-        }
-        return(totalMSE/4.0);
+        Double totalMSE = vectorMSE.getValues().get(0).get(0);
+
+        return(totalMSE/testCount);
     }
 
 }
