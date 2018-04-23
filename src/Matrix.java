@@ -26,7 +26,7 @@ public class Matrix {
 
     public Matrix getRow(int index) {
         Vector<Vector<Double>> mat = new Vector<Vector<Double>>();
-        for(int i = 0; i < 4; i++){
+        for(int i = 0; i < 1; i++){
             Vector<Double> temp = new Vector<Double>();
             temp.add(values.get(index).get(i));
             mat.add(temp);

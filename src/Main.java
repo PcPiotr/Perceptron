@@ -1,20 +1,41 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
+    public static void importData(String filename, Matrix one, Matrix two) throws FileNotFoundException {
+        Scanner input = new Scanner(new File(filename)).useLocale(Locale.US) ;
+        Vector<Vector<Double>> oneVal = one.getValues();
+        Vector<Vector<Double>> twoVal = two.getValues();
+        for (int i = 0; i < one.getRows(); i++) {
+            oneVal.get(i).set(0, input.nextDouble());
+            twoVal.get(i).set(0, input.nextDouble());
+            }
+            one.setValues(oneVal);
+        two.setValues(twoVal);
+        }
+
     public static void main(String[] args) throws IOException {
 
-        int numberOfTests = 4; int numberOfInputs = 4;
-        Matrix inputData = new Matrix (numberOfTests, numberOfInputs,"Input.txt",0);
-        Matrix outputData = inputData;
-        NeuralNetwork network;
+        boolean wariant = false;
 
+        Matrix inputData;  Matrix outputData; int numberOfTests; int numberOfInputs;
+        if(wariant){
+            numberOfTests = 81; numberOfInputs = 1;
+            inputData = new Matrix (81, 1);
+            outputData = new Matrix (81, 1);
+            importData("apro1.txt", inputData, outputData);
+        }
+        else{
+            numberOfTests = 15; numberOfInputs = 1;
+            inputData = new Matrix (15, 1);
+            outputData = new Matrix (15, 1);
+            importData("apro2.txt", inputData, outputData);
+        }
+
+        NeuralNetwork network;
         //Options
-        network = new NeuralNetwork(4,2,4);
+        network = new NeuralNetwork(1,2,1);
         network.setUseBias(true);
         network.setLineal(false);
         network.setLearningRate(0.1);
@@ -22,7 +43,7 @@ public class Main {
         int generations = 1000;
 
         ArrayList<Integer> numbers = new ArrayList<Integer>();
-        for(int i = 0; i < 4; i++ ){
+        for(int i = 0; i < numberOfTests; i++ ){
             numbers.add(i);
         }
 
@@ -30,18 +51,22 @@ public class Main {
 
         for (int i = 0; i < generations; i++){
             Collections.shuffle(numbers);
-            for (int j = 0; j < 4; j++){
+            for (int j = 0; j < numberOfTests; j++){
                 Integer index = numbers.get(j);
                 network.Backforward(outputData.getRow(index), inputData.getRow(index));
 
             }
-            pisarz.write(Double.toString(MSECalc.calculate(outputData, inputData, network)) + "\n");
-            System.out.println(MSECalc.calculate(outputData, inputData, network));
+            pisarz.write(Double.toString(MSECalc.calculate(outputData, inputData, network, numberOfTests)) + "\n");
+            System.out.println(MSECalc.calculate(outputData, inputData, network, numberOfTests));
         }
 
-        for (int i = 0; i < 4; i++){
-            Matrix output = network.Feedforward( inputData.getRow(i));
-            inputData.getRow(i).print();
+        Matrix testInData = new Matrix (1000, 1);
+        Matrix testOutData = new Matrix (1000, 1);
+        importData("aprotest.txt", testInData, testOutData);
+
+        for (int i = 0; i < 1000; i++){
+            Matrix output = network.Feedforward( testInData.getRow(i));
+            testOutData.getRow(i).print();
             output.print();
         }
     }
