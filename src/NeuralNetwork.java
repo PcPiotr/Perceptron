@@ -85,7 +85,7 @@ public class NeuralNetwork {
         Matrix gradient;
         if (!lineal){
             gradient = output.retMap(new DerivativeFunction());
-            gradient = (gradient.retMultiply(outputError)).retMultiply(learningRate);
+            gradient = ( gradient.retMultiply(outputError) ).retMultiply(learningRate);
         }
         else{
             gradient = outputError.retMultiply(learningRate);
@@ -93,14 +93,14 @@ public class NeuralNetwork {
 
         //Delta Weights Output Hidden
         //
-        deltaWeightsOH = (gradient.retMultiply(hidden.retTranspose())).retAdd(deltaWeightsOH.retMultiply(momentum));
+        deltaWeightsOH = ( gradient.retMultiply(hidden.retTranspose()) ).retAdd( deltaWeightsOH.retMultiply(momentum) );
         //
         //Adjust weightsOH
         weightsOH.add(deltaWeightsOH);
 
         //Adjust the output layer bias
         if (useBias){
-            deltaBiasO = gradient.retAdd(deltaBiasO.retMultiply(momentum));
+            deltaBiasO = gradient.retAdd( deltaBiasO.retMultiply(momentum) );
             biasO.add(deltaBiasO);
         }
 
@@ -108,24 +108,22 @@ public class NeuralNetwork {
         Matrix gradientHidden = hidden;
         if(!lineal){
             gradientHidden.map(new DerivativeFunction());
-            gradientHidden = (gradientHidden.retMultiply(hiddenError)).retMultiply(learningRate);
+            gradientHidden = ( gradientHidden.retMultiply(hiddenError) ).retMultiply(learningRate);
         }
         else{
             gradient = hiddenError.retMultiply(learningRate);
         }
 
         //Inputs->hidden deltas
-        deltaWeightsHI = (gradientHidden.retMultiply(input.retTranspose())).retAdd(deltaWeightsHI.retMultiply(momentum));
+        deltaWeightsHI = ( gradientHidden.retMultiply(input.retTranspose()) ).retAdd( deltaWeightsHI.retMultiply(momentum) );
 
         //Adjust weightsHI by delta
         weightsHI.add(deltaWeightsHI);
 
         //Adjust hidden layer bias
         if (useBias){
-            deltaBiasH = gradientHidden.retAdd(deltaBiasH.retMultiply(momentum));
+            deltaBiasH = gradientHidden.retAdd( deltaBiasH.retMultiply(momentum) );
             biasH.add(deltaBiasH);
         }
     }
-
-
 }

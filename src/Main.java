@@ -7,8 +7,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         int numberOfTests = 4; int numberOfInputs = 4;
-        Matrix test = new Matrix (numberOfTests, numberOfInputs,"Input.txt",0);
-        Matrix trening = test;
+        Matrix inputData = new Matrix (numberOfTests, numberOfInputs,"Input.txt",0);
+        Matrix outputData = inputData;
         NeuralNetwork network;
 
         //Options
@@ -28,15 +28,15 @@ public class Main {
             Collections.shuffle(numbers);
             for (int j = 0; j < 4; j++){
                 Integer index = numbers.get(j);
-                network.Backforward(trening.getCol(index), test.getCol(index));
+                network.Backforward(outputData.getRow(index), inputData.getRow(index));
 
             }
-            System.out.println(MSECalc.calculate(trening, test, network));
+            System.out.println(MSECalc.calculate(outputData, inputData, network));
         }
 
         for (int i = 0; i < 4; i++){
-            Matrix output = network.Feedforward( test.getCol(i));
-            test.getCol(i).print();
+            Matrix output = network.Feedforward( inputData.getRow(i));
+            inputData.getRow(i).print();
             output.print();
         }
     }

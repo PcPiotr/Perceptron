@@ -1,5 +1,4 @@
 import java.io.*;
-import java.net.URL;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -26,12 +25,6 @@ public class Matrix {
     }
 
     public Matrix getRow(int index) {
-        Vector<Vector<Double>> mat = new Vector<Vector<Double>>();
-        mat.add(values.get(index));
-        return(new Matrix(mat));
-    }
-
-    public Matrix getCol(int index) {
         Vector<Vector<Double>> mat = new Vector<Vector<Double>>();
         for(int i = 0; i < 4; i++){
             Vector<Double> temp = new Vector<Double>();
