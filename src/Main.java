@@ -1,3 +1,5 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +26,8 @@ public class Main {
             numbers.add(i);
         }
 
+        BufferedWriter pisarz = new BufferedWriter(new FileWriter("export.txt"));
+
         for (int i = 0; i < generations; i++){
             Collections.shuffle(numbers);
             for (int j = 0; j < 4; j++){
@@ -31,6 +35,7 @@ public class Main {
                 network.Backforward(outputData.getRow(index), inputData.getRow(index));
 
             }
+            pisarz.write(Double.toString(MSECalc.calculate(outputData, inputData, network)) + "\n");
             System.out.println(MSECalc.calculate(outputData, inputData, network));
         }
 

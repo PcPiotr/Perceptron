@@ -99,7 +99,7 @@ public class Matrix {
                     if (j == values.get(i).size() - 1) {
                         pisarz.write(Double.toString(values.get(i).get(j)));
                     } else {
-                        pisarz.write(Double.toString(values.get(i).get(j)) + ",");
+                        pisarz.write(Double.toString(values.get(i).get(j)) + ", ");
                     }
                 }
                 pisarz.newLine();
