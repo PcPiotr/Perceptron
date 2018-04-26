@@ -1,22 +1,17 @@
 public class NeuralNetwork {
+	
+    private double learningRate;
+    private double momentum;
 
-    private int input;
-    private int hidden;
-    private int output;
+    private boolean useBias;
 
-    private double learningRate = 0.5;
-    private double momentum = 0.1;
-
-    private boolean useBias = false;
-    private boolean lineal = false;
-
-    private Matrix weightsHI;
-    private Matrix weightsOH;
+    private Matrix weightsInput;
+    private Matrix weightsOutput;
     private Matrix biasH;
     private Matrix biasO;
 
-    private Matrix deltaWeightsHI;
-    private Matrix deltaWeightsOH;
+    private Matrix deltaWeightsInput;
+    private Matrix deltaWeightsOutput;
     private Matrix deltaBiasO;
     private Matrix deltaBiasH;
 
@@ -33,19 +28,15 @@ public class NeuralNetwork {
         this.useBias = useBias;
     }
 
-    public void setLineal(boolean lineal) {
-        this.lineal = lineal;
-    }
-
     //Constructor
     public NeuralNetwork(int inputCount, int hiddenCount, int outputCount) {
         int vectorColumnCount = 1;
 
-        weightsOH = new Matrix(outputCount, hiddenCount);
-        weightsHI = new Matrix(hiddenCount, outputCount);
+        weightsOutput = new Matrix(outputCount, hiddenCount);
+        weightsInput =  new Matrix(hiddenCount, outputCount);
 
-        deltaWeightsOH = new Matrix(outputCount, hiddenCount);
-        deltaWeightsHI = new Matrix(hiddenCount,inputCount);
+        deltaWeightsOutput = new Matrix(outputCount, hiddenCount);
+        deltaWeightsInput =  new Matrix(hiddenCount, inputCount);
 
         biasO = new Matrix(outputCount, vectorColumnCount);
         biasH = new Matrix(hiddenCount, vectorColumnCount);
@@ -54,73 +45,57 @@ public class NeuralNetwork {
         deltaBiasH = new Matrix(hiddenCount, vectorColumnCount);
     }
 
-    //Feedforward function
-    Matrix Feedforward(Matrix input) {
-        Matrix hidden = weightsHI.retMultiply(input);
+    Matrix feedforward(Matrix input) {
+        Matrix hidden = weightsInput.retMultiply(input);
         if (useBias) { hidden.add(biasH); }
-        if (!lineal) { hidden.map(new ActivationFunction()); }
+        hidden.map(new ActivationFunction());
 
-        Matrix output = weightsOH.retMultiply(hidden);
+        Matrix output = weightsOutput.retMultiply(hidden);
         if (useBias) { output.add(biasO); }
-        if (!lineal) { output.map(new ActivationFunction()); }
+        output.map(new ActivationFunction());
         return output;
     }
 
-    void Backforward(Matrix input, Matrix answer){
-        Matrix hidden = weightsHI.retMultiply(input);
+    void backpropagation(Matrix input, Matrix answer){
+        Matrix hidden = weightsInput.retMultiply(input);
         if (useBias) { hidden.add(biasH); }
-        if (!lineal) { hidden.map(new ActivationFunction()); }
+        hidden.map(new ActivationFunction());
 
-        Matrix output = weightsOH.retMultiply(hidden);
+        Matrix output = weightsOutput.retMultiply(hidden);
         if (useBias) { output.add(biasO); }
-        if (!lineal) { output.map(new ActivationFunction()); }
+        output.map(new ActivationFunction());
 
         //Output Error
         Matrix outputError = answer.retSubtract(output);
 
         //Hidden Layer Errors
-        Matrix hiddenError = (weightsOH.retTranspose()).retMultiply(outputError);
+        Matrix hiddenError = (weightsOutput.retTranspose()).retMultiply(outputError);
 
         //Gradient
         Matrix gradient;
-        if (!lineal){
-            gradient = output.retMap(new DerivativeFunction());
-            gradient = ( gradient.retMultiply(outputError) ).retMultiply(learningRate);
-        }
-        else{
-            gradient = outputError.retMultiply(learningRate);
-        }
+        gradient = output.retMap(new DerivativeFunction());
+        gradient = ( gradient.retMultiply(outputError) ).retMultiply(learningRate);
 
-        //Delta Weights Output Hidden
-        //
-        deltaWeightsOH = ( gradient.retMultiply(hidden.retTranspose()) ).retAdd( deltaWeightsOH.retMultiply(momentum) );
-        //
-        //Adjust weightsOH
-        weightsOH.add(deltaWeightsOH);
+        //Delta Weights on Output and Adjust Weights on Output
+        deltaWeightsOutput = ( gradient.retMultiply(hidden.retTranspose()) ).retAdd( deltaWeightsOutput.retMultiply(momentum) );
+        weightsOutput.add(deltaWeightsOutput);
 
-        //Adjust the output layer bias
+        //Adjust Bias On Output Layer
         if (useBias){
             deltaBiasO = gradient.retAdd( deltaBiasO.retMultiply(momentum) );
             biasO.add(deltaBiasO);
         }
 
-        //Hidden Gradient
+        //Hidden Layer Gradient
         Matrix gradientHidden = hidden;
-        if(!lineal){
-            gradientHidden.map(new DerivativeFunction());
-            gradientHidden = ( gradientHidden.retMultiply(hiddenError) ).retMultiply(learningRate);
-        }
-        else{
-            gradient = hiddenError.retMultiply(learningRate);
-        }
+        gradientHidden.map(new DerivativeFunction());
+        gradientHidden = ( gradientHidden.retMultiply(hiddenError) ).retMultiply(learningRate);
 
-        //Inputs->hidden deltas
-        deltaWeightsHI = ( gradientHidden.retMultiply(input.retTranspose()) ).retAdd( deltaWeightsHI.retMultiply(momentum) );
+        //Delta on Input to Hidden Layer, Adjust Weights
+        deltaWeightsInput = ( gradientHidden.retMultiply(input.retTranspose()) ).retAdd( deltaWeightsInput.retMultiply(momentum) );
+        weightsInput.add(deltaWeightsInput);
 
-        //Adjust weightsHI by delta
-        weightsHI.add(deltaWeightsHI);
-
-        //Adjust hidden layer bias
+        //Adjust Hidden Layer Bias
         if (useBias){
             deltaBiasH = gradientHidden.retAdd( deltaBiasH.retMultiply(momentum) );
             biasH.add(deltaBiasH);

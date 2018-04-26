@@ -9,14 +9,13 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         int numberOfTests = 4; int numberOfInputs = 4;
-        Matrix inputData = new Matrix (numberOfTests, numberOfInputs,"Input.txt",0);
+        Matrix inputData = new Matrix (numberOfTests, numberOfInputs, "Input.txt");
         Matrix outputData = inputData;
         NeuralNetwork network;
 
         //Options
-        network = new NeuralNetwork(4,2,4);
+        network = new NeuralNetwork(4,1,4);
         network.setUseBias(true);
-        network.setLineal(false);
         network.setLearningRate(0.1);
         network.setMomentum(0.5);
         int generations = 1000;
@@ -26,23 +25,24 @@ public class Main {
             numbers.add(i);
         }
 
-        BufferedWriter pisarz = new BufferedWriter(new FileWriter("export.txt"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter("export.txt"));
 
         for (int i = 0; i < generations; i++){
             Collections.shuffle(numbers);
             for (int j = 0; j < 4; j++){
                 Integer index = numbers.get(j);
-                network.Backforward(outputData.getRow(index), inputData.getRow(index));
+                network.backpropagation(inputData.getRow(index), outputData.getRow(index));
 
             }
-            pisarz.write(Double.toString(MSECalc.calculate(outputData, inputData, network)) + "\n");
-            System.out.println(MSECalc.calculate(outputData, inputData, network));
+            //writer.write(Double.toString(MSECalc.calculate(outputData, inputData, network)) + "\n");
+            //System.out.println(MSECalc.calculate(outputData, inputData, network));
         }
 
         for (int i = 0; i < 4; i++){
-            Matrix output = network.Feedforward( inputData.getRow(i));
+            Matrix output = network.feedforward( inputData.getRow(i));
             inputData.getRow(i).print();
             output.print();
         }
+        writer.close();
     }
 }

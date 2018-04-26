@@ -62,11 +62,8 @@ public class Matrix {
     }
 
     // Matrix constructor, reads values from file
-    Matrix(int rows, int cols, String filename, int skipInputs) throws FileNotFoundException {
+    Matrix(int rows, int cols, String filename) throws FileNotFoundException {
         Scanner input = new Scanner(new File(filename));
-        for (int i = 0; i < skipInputs; i++) {
-            int garbage = input.nextInt();
-        }
         for (int i = 0; i < rows; i++) {
             Vector<Double> row = new Vector<Double>();
             for (int j = 0; j < cols; j++) {
@@ -75,6 +72,7 @@ public class Matrix {
             }
             values.add(row);
         }
+        input.close();
     }
 
     Matrix(Vector<Vector<Double>> vec) {
@@ -315,8 +313,4 @@ public class Matrix {
         Matrix tempp = new Matrix(temp);
         return(tempp);
     }
-
-
-
-
 }
